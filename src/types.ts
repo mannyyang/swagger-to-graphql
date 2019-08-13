@@ -90,6 +90,7 @@ export interface ArraySchema extends CommonSchema {
   type: 'array';
   items: RefType | JSONSchemaNoRefOrBody | RefType[] | JSONSchemaNoRefOrBody[];
   required?: boolean;
+  allOf?: any;
 }
 
 export interface ScalarSchema extends CommonSchema {
@@ -100,7 +101,12 @@ export interface ScalarSchema extends CommonSchema {
 
 export type JSONSchemaNoRefOrBody = ObjectSchema | ArraySchema | ScalarSchema;
 
-export type JSONSchemaType = RefType | BodySchema | JSONSchemaNoRefOrBody;
+export type JSONSchemaType =
+  | RefType
+  | BodySchema
+  | JSONSchemaNoRefOrBody
+  | ArraySchema
+  | ObjectSchema;
 
 export interface Variable {
   default?: string;

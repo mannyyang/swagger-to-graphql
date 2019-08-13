@@ -124,6 +124,29 @@ export const jsonSchemaTypeToGraphQL = (
   isInputType: boolean,
   gqlTypes: GraphQLTypeMap,
 ) => {
+  if ('allOf' in jsonSchema) {
+    /**
+     * Support allOf feature in json schema
+     */
+
+    // If there is an allOf reference, flatten its properties and the
+    // additional properties into a single respone.
+    // if (jsonSchema && jsonSchema.allOf) {
+    //   return flattenAllOfProperties(jsonSchema);
+    // }
+
+    // If it's an array of a definition that uses an allOf, change the items
+    // to be the flattened definition.
+    // else if (jsonSchema && jsonSchema.items && jsonSchema.items.allOf) {
+    //   return {
+    //     items: flattenAllOfProperties(jsonSchema.items),
+    //     type: 'array',
+    //   };
+    // }
+
+    jsonSchema = flattenAllOfProperties(jsonSchema);
+  }
+
   const baseType = (() => {
     if (isRefType(jsonSchema)) {
       return getExistingType(jsonSchema.$ref, isInputType, gqlTypes);
@@ -347,4 +370,25 @@ export const mapParametersToFields = (
     };
     return res;
   }, {});
+};
+
+const flattenAllOfProperties = schemaDefinition => {
+  let parentSchema = JSON.parse(JSON.stringify(schemaDefinition.allOf[0]));
+  let additionalSchema = schemaDefinition.allOf[1] || {};
+  let finalSchema = parentSchema;
+  for (const key in additionalSchema) {
+    // If it's an object, we need to merge in all properties.
+    if (additionalSchema[key] === Object(additionalSchema[key])) {
+      for (const propertyKey in additionalSchema[key]) {
+        finalSchema[key][propertyKey] = additionalSchema[key][propertyKey];
+      }
+    }
+    // If it's not, just add it on.  E.g. the 'type' property is a string.
+    else {
+      finalSchema[key] = additionalSchema[key];
+    }
+  }
+  // Return this flattened response (instead of the standard one, which would
+  // contain the allOf elements).
+  return finalSchema;
 };
