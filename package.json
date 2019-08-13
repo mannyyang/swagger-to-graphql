@@ -1,10 +1,10 @@
 {
   "name": "swagger-to-graphql",
   "version": "1.8.2",
-  "author": "Roman Krivtsov",
+  "author": "Manuel Yang",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yarax/swagger-to-graphql.git"
+    "url": "https://github.com/mannyyang/swagger-to-graphql"
   },
   "bin": "./bin/swagger2graphql",
   "dependencies": {
